@@ -1,8 +1,9 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService"; // đóng ngoac do export dưới dạng obj
 import ReactPaginate from "react-paginate";
+import ModalAddNew from "./ModalAddNew";
 
 const TableUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
@@ -17,6 +18,9 @@ const TableUsers = (props) => {
     }
   };
 
+  const handleUpdateTable = (user) => {
+    setListUsers([user, ...listUsers]);
+  };
   useEffect(() => {
     // call api
     // dry
@@ -24,13 +28,27 @@ const TableUsers = (props) => {
   }, []);
 
   useEffect(() => {}, [listUsers]);
+  const [isShowModalAddNew, setShowModalAddNew] = useState(false);
 
+  const handleClose = () => {
+    setShowModalAddNew(false);
+  };
   // hàm xử lí mỗi lần click chuyển trang sẽ gọi api lấy đúng số lượng user trong trang
   const handlePageClick = (event) => {
     getUsers(+event.selected + 1);
   };
   return (
     <>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h5> List User</h5>
+        <button
+          className="btn btn-outline-dark"
+          onClick={() => setShowModalAddNew(true)}
+        >
+          Add New
+        </button>
+      </div>
+
       <Table striped bordered hover>
         <thead style={{ textAlign: "center" }}>
           <tr>
@@ -80,6 +98,11 @@ const TableUsers = (props) => {
         breakLinkClassName="page-link"
         containerClassName="pagination"
         activeClassName="active"
+      />
+      <ModalAddNew
+        show={isShowModalAddNew}
+        handleClose={handleClose}
+        handleUpdateTable={handleUpdateTable}
       />
     </>
   );

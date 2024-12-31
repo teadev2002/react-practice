@@ -4,5 +4,9 @@ const fetchAllUser = (page) => {
   return axios.get(`/api/users?page=${page}`); // this is promise
 };
 
+const postCreateUser = (name, job) => {
+  return axios.post(`api/users`, { name, job });
+};
+
 // export dưới dạng obj thì export bao nhiêu biến cũng được
-export { fetchAllUser };
+export { fetchAllUser, postCreateUser };
