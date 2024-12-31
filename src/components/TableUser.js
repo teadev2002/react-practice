@@ -4,11 +4,15 @@ import Table from "react-bootstrap/Table";
 import { fetchAllUser } from "../services/UserService"; // đóng ngoac do export dưới dạng obj
 import ReactPaginate from "react-paginate";
 import ModalAddNew from "./ModalAddNew";
-
+import { toast } from "react-toastify";
+import ModalEditUser from "./ModalEditUser";
 const TableUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0); // paging: ban đầu ko có dữ liệu thì là 0
   const [totalPages, setTotalPages] = useState(0); // tổng số trang
+  const [isShowModalAddNew, setShowModalAddNew] = useState(false);
+  const [isShowModalEditUser, setIsShowModalEditUser] = useState(false);
+  const [dataUserEdit, setDataUserEdit] = useState({});
   const getUsers = async (page) => {
     let res = await fetchAllUser(page);
     if (res && res.data && res.data.data) {
@@ -28,14 +32,27 @@ const TableUsers = (props) => {
   }, []);
 
   useEffect(() => {}, [listUsers]);
-  const [isShowModalAddNew, setShowModalAddNew] = useState(false);
 
   const handleClose = () => {
     setShowModalAddNew(false);
+    setIsShowModalEditUser(false);
   };
   // hàm xử lí mỗi lần click chuyển trang sẽ gọi api lấy đúng số lượng user trong trang
   const handlePageClick = (event) => {
     getUsers(+event.selected + 1);
+  };
+
+  const hanldeDetailUser = (event) => {
+    toast.info("Detail toast");
+  };
+
+  const hanldeDeleteUser = (event) => {
+    toast.warn("Delete user");
+  };
+
+  const hanldeEditUser = (user) => {
+    setDataUserEdit(user);
+    setIsShowModalEditUser(true);
   };
   return (
     <>
@@ -57,6 +74,7 @@ const TableUsers = (props) => {
             <th>Email</th>
             <th>First Name</th>
             <th>Last Name</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody style={{ textAlign: "center" }}>
@@ -75,6 +93,26 @@ const TableUsers = (props) => {
                   <td>{item.email}</td>
                   <td>{item.first_name}</td>
                   <td>{item.last_name}</td>
+                  <td>
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={(event) => hanldeDetailUser(event)}
+                    >
+                      👁️
+                    </button>
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={(item) => hanldeDeleteUser(item)}
+                    >
+                      🗑️
+                    </button>
+                    <button
+                      className="btn btn-outline-success"
+                      onClick={() => hanldeEditUser(item)}
+                    >
+                      🛠️
+                    </button>
+                  </td>
                 </tr>
               );
             })}
@@ -103,6 +141,11 @@ const TableUsers = (props) => {
         show={isShowModalAddNew}
         handleClose={handleClose}
         handleUpdateTable={handleUpdateTable}
+      />
+      <ModalEditUser
+        show={isShowModalEditUser}
+        handleClose={handleClose}
+        dataUserEdit={dataUserEdit}
       />
     </>
   );
