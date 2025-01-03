@@ -5,8 +5,12 @@ const fetchAllUser = (page) => {
 };
 
 const postCreateUser = (name, job) => {
-  return axios.post(`api/users`, { name, job });
+  return axios.post(`/api/users`, { name, job });
+};
+
+const putUpdateUser = (name, job) => {
+  return axios.put(`/api/users`, { name, job });
 };
 
 // export dưới dạng obj thì export bao nhiêu biến cũng được
-export { fetchAllUser, postCreateUser };
+export { fetchAllUser, postCreateUser, putUpdateUser };

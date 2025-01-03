@@ -2,7 +2,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { Container } from "react-bootstrap/Container";
 import { useEffect, useState } from "react";
-import { postCreateUser } from "../services/UserService.js";
+import { putUpdateUser } from "../services/UserService.js";
 import { toast } from "react-toastify";
 
 const ModalEditUser = (props) => {
@@ -10,7 +10,10 @@ const ModalEditUser = (props) => {
   const [name, setName] = useState("");
   const [job, setJob] = useState("");
 
-  const hanldeEditUser = () => {};
+  const hanldeEditUser = async () => {
+    let res = await putUpdateUser(name, job);
+    console.log(res);
+  };
 
   useEffect(() => {
     if (show) {
@@ -23,7 +26,12 @@ const ModalEditUser = (props) => {
       className="modal show"
       style={{ display: "block", position: "initial" }}
     >
-      <Modal show={show} onHide={handleClose}>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit User</Modal.Title>
         </Modal.Header>

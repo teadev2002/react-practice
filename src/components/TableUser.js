@@ -6,6 +6,7 @@ import ReactPaginate from "react-paginate";
 import ModalAddNew from "./ModalAddNew";
 import { toast } from "react-toastify";
 import ModalEditUser from "./ModalEditUser";
+import ModalConfirm from "./ModalConfirm";
 const TableUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0); // paging: ban đầu ko có dữ liệu thì là 0
@@ -13,6 +14,10 @@ const TableUsers = (props) => {
   const [isShowModalAddNew, setShowModalAddNew] = useState(false);
   const [isShowModalEditUser, setIsShowModalEditUser] = useState(false);
   const [dataUserEdit, setDataUserEdit] = useState({});
+  const [dataUserDelete, setDataUserDelete] = useState({});
+
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+
   const getUsers = async (page) => {
     let res = await fetchAllUser(page);
     if (res && res.data && res.data.data) {
@@ -36,6 +41,7 @@ const TableUsers = (props) => {
   const handleClose = () => {
     setShowModalAddNew(false);
     setIsShowModalEditUser(false);
+    setIsShowModalDelete(false);
   };
   // hàm xử lí mỗi lần click chuyển trang sẽ gọi api lấy đúng số lượng user trong trang
   const handlePageClick = (event) => {
@@ -46,8 +52,10 @@ const TableUsers = (props) => {
     toast.info("Detail toast");
   };
 
-  const hanldeDeleteUser = (event) => {
-    toast.warn("Delete user");
+  const hanldeDeleteUser = (user) => {
+    setIsShowModalDelete(true);
+
+    setDataUserDelete(user);
   };
 
   const hanldeEditUser = (user) => {
@@ -102,7 +110,7 @@ const TableUsers = (props) => {
                     </button>
                     <button
                       className="btn btn-outline-danger"
-                      onClick={(item) => hanldeDeleteUser(item)}
+                      onClick={() => hanldeDeleteUser(item)}
                     >
                       🗑️
                     </button>
@@ -146,6 +154,12 @@ const TableUsers = (props) => {
         show={isShowModalEditUser}
         handleClose={handleClose}
         dataUserEdit={dataUserEdit}
+      />
+
+      <ModalConfirm
+        show={isShowModalDelete}
+        handleClose={handleClose}
+        dataUserDelete={dataUserDelete}
       />
     </>
   );
