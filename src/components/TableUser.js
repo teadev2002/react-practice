@@ -7,6 +7,8 @@ import ModalAddNew from "./ModalAddNew";
 import { toast } from "react-toastify";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
+import _ from "lodash";
+import "./TableUser.scss";
 const TableUsers = (props) => {
   let [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0); // paging: ban đầu ko có dữ liệu thì là 0
@@ -15,8 +17,19 @@ const TableUsers = (props) => {
   const [isShowModalEditUser, setIsShowModalEditUser] = useState(false);
   const [dataUserEdit, setDataUserEdit] = useState({});
   const [dataUserDelete, setDataUserDelete] = useState({});
-
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+  const [sortBy, setSortBy] = useState("asc");
+  const [sortField, setSortFeild] = useState("id");
+
+  const handleSort = (sortBy, sortField) => {
+    setSortBy(sortBy);
+    setSortFeild(sortField);
+
+    let cloneListUsers = _.cloneDeep(listUsers);
+    cloneListUsers = _.orderBy(cloneListUsers, [sortField], [sortBy]);
+    setListUsers(cloneListUsers);
+    console.log("sort", cloneListUsers);
+  };
 
   const getUsers = async (page) => {
     let res = await fetchAllUser(page);
@@ -56,21 +69,25 @@ const TableUsers = (props) => {
     setIsShowModalDelete(true);
     setDataUserDelete(user);
   };
-
+  // chỉ để tạo cảm giác xóa api, chứ bước này khi dùng api thật thì ko cần
   const handleDeleteUserFromModal = (user) => {
-    let cloneListUsers = [...listUsers];
+    let cloneListUsers = _.cloneDeep(listUsers);
     cloneListUsers = cloneListUsers.filter((item) => item.id !== user.id);
-    setListUsers = cloneListUsers;
+    setListUsers(cloneListUsers);
   };
 
   const hanldeEditUser = (user) => {
     setDataUserEdit(user);
     setIsShowModalEditUser(true);
   };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h5> List User</h5>
+        <h5>
+          {" "}
+          List User <i className="fas fa-globe-europe"></i>
+        </h5>
         <button
           className="btn btn-outline-dark"
           onClick={() => setShowModalAddNew(true)}
@@ -82,10 +99,39 @@ const TableUsers = (props) => {
       <Table striped bordered hover>
         <thead style={{ textAlign: "center" }}>
           <tr>
-            <th>ID</th>
+            <th>
+              <div className="sort-header">
+                <span>ID</span>
+
+                <span>
+                  <i
+                    onClick={() => handleSort("desc", "id")}
+                    className="fa-solid fa-circle-down"
+                  ></i>
+                  <i
+                    onClick={() => handleSort("asc", "id")}
+                    className="fa-solid fa-circle-up"
+                  ></i>
+                </span>
+              </div>
+            </th>
             <th>Avatar</th>
             <th>Email</th>
-            <th>First Name</th>
+            <th>
+              <div className="sort-header">
+                <span>First Name</span>
+                <span>
+                  <i
+                    onClick={() => handleSort("desc", "first_name")}
+                    className="fa-solid fa-circle-down"
+                  ></i>
+                  <i
+                    onClick={() => handleSort("asc", "first_name")}
+                    className="fa-solid fa-circle-up"
+                  ></i>
+                </span>
+              </div>
+            </th>
             <th>Last Name</th>
             <th>Action</th>
           </tr>
