@@ -12,5 +12,8 @@ const putUpdateUser = (name, job) => {
   return axios.put(`/api/users`, { name, job });
 };
 
+const deleteUser = (id) => {
+  return axios.delete(`/api/users/${id}`);
+};
 // export dưới dạng obj thì export bao nhiêu biến cũng được
-export { fetchAllUser, postCreateUser, putUpdateUser };
+export { fetchAllUser, postCreateUser, putUpdateUser, deleteUser };

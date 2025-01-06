@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
 const TableUsers = (props) => {
-  const [listUsers, setListUsers] = useState([]);
+  let [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0); // paging: ban đầu ko có dữ liệu thì là 0
   const [totalPages, setTotalPages] = useState(0); // tổng số trang
   const [isShowModalAddNew, setShowModalAddNew] = useState(false);
@@ -54,8 +54,13 @@ const TableUsers = (props) => {
 
   const hanldeDeleteUser = (user) => {
     setIsShowModalDelete(true);
-
     setDataUserDelete(user);
+  };
+
+  const handleDeleteUserFromModal = (user) => {
+    let cloneListUsers = [...listUsers];
+    cloneListUsers = cloneListUsers.filter((item) => item.id !== user.id);
+    setListUsers = cloneListUsers;
   };
 
   const hanldeEditUser = (user) => {
@@ -160,6 +165,7 @@ const TableUsers = (props) => {
         show={isShowModalDelete}
         handleClose={handleClose}
         dataUserDelete={dataUserDelete}
+        handleDeleteUserFromModal={handleDeleteUserFromModal}
       />
     </>
   );
