@@ -7,7 +7,7 @@ import ModalAddNew from "./ModalAddNew";
 import { toast } from "react-toastify";
 import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
-import _ from "lodash";
+import _, { debounce } from "lodash";
 import "./TableUser.scss";
 const TableUsers = (props) => {
   let [listUsers, setListUsers] = useState([]);
@@ -20,7 +20,22 @@ const TableUsers = (props) => {
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const [sortField, setSortFeild] = useState("id");
+  const [keyword, setKeyword] = useState("");
 
+  const handleSearch = debounce((event) => {
+    let term = event.target.value;
+    console.log("run search term: ", term);
+    if (term) {
+      let cloneListUsers = _.cloneDeep(listUsers);
+      cloneListUsers = cloneListUsers.filter((item) =>
+        item.email.includes(term)
+      );
+      console.log(cloneListUsers);
+      setListUsers(cloneListUsers);
+    } else {
+      getUsers(1); // page 1
+    }
+  }, 500);
   const handleSort = (sortBy, sortField) => {
     setSortBy(sortBy);
     setSortFeild(sortField);
@@ -85,9 +100,21 @@ const TableUsers = (props) => {
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h5>
-          {" "}
-          List User <i className="fas fa-globe-europe"></i>
+          <span>
+            {" "}
+            List User <i className="fas fa-globe-europe"></i>{" "}
+          </span>
         </h5>
+
+        <div className="col-4 mt-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Email"
+            // value={setKeyword}
+            onChange={(event) => handleSearch(event)}
+          />
+        </div>
         <button
           className="btn btn-outline-dark"
           onClick={() => setShowModalAddNew(true)}
