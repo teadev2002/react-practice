@@ -23,6 +23,29 @@ const TableUsers = (props) => {
   const [sortBy, setSortBy] = useState("asc");
   const [sortField, setSortFeild] = useState("id");
   const [keyword, setKeyword] = useState("");
+
+  const [dataExport, setDataExport] = useState([]);
+  // CSV EXPORT
+  const getUsersExport = (event, done) => {
+    let result = []; // tạo dữ liệu ban đẩu là rỗng
+    if (listUsers && listUsers.length > 0) {
+      // xét điều kiện
+      result.push(["Id", "Email", "First Name", "Last Name"]); // push cái thead cho table
+      listUsers.map((item, index) => {
+        // map dữ liệu theo cái thead bên trên
+        let arr = [];
+        arr[0] = item.id;
+        arr[1] = item.email;
+        arr[2] = item.first_name;
+        arr[3] = item.last_name;
+        result.push(arr); // push arr vào result
+      });
+
+      setDataExport(result); // gọi setState thêm result vào để có data trong dataExport
+      done(); // cuối cùng là gọi tới hàm done để báo kết thúc
+    }
+  };
+
   const handleSearch = debounce((event) => {
     let term = event.target.value;
     console.log("run search term: ", term);
@@ -38,12 +61,6 @@ const TableUsers = (props) => {
     }
   }, 500);
 
-  const csvData = [
-    ["firstname", "lastname", "email"],
-    ["Ahmed", "Tomi", "ah@smthing.co.com"],
-    ["Raed", "Labes", "rl@smthing.co.com"],
-    ["Yezzi", "Min l3b", "ymin@cocococo.com"],
-  ];
   const handleSort = (sortBy, sortField) => {
     setSortBy(sortBy);
     setSortFeild(sortField);
@@ -146,16 +163,17 @@ const TableUsers = (props) => {
             />
           </div>
           <div style={{ display: "flex", gap: "10px" }}>
-            {" "}
             {/* Chứa các nút thẳng hàng */}
             <label htmlFor="import" className="btn btn-outline-primary">
               <i className="fa-solid fa-file-import"></i> Import
             </label>
             <input id="import" type="file" hidden />
             <CSVLink
-              data={csvData}
               filename={"users.csv"}
               className="btn btn-outline-success"
+              data={dataExport}
+              asyncOnClick={true} // chờ onclick xử lí xong
+              onClick={getUsersExport} // run function bên trong
             >
               <i className="fa-solid fa-download"></i> Export
             </CSVLink>
