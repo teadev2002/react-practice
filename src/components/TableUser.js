@@ -9,6 +9,8 @@ import ModalEditUser from "./ModalEditUser";
 import ModalConfirm from "./ModalConfirm";
 import _, { debounce } from "lodash";
 import "./TableUser.scss";
+import { CSVLink, CSVDownload } from "react-csv";
+
 const TableUsers = (props) => {
   let [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0); // paging: ban đầu ko có dữ liệu thì là 0
@@ -21,7 +23,6 @@ const TableUsers = (props) => {
   const [sortBy, setSortBy] = useState("asc");
   const [sortField, setSortFeild] = useState("id");
   const [keyword, setKeyword] = useState("");
-
   const handleSearch = debounce((event) => {
     let term = event.target.value;
     console.log("run search term: ", term);
@@ -36,6 +37,13 @@ const TableUsers = (props) => {
       getUsers(1); // page 1
     }
   }, 500);
+
+  const csvData = [
+    ["firstname", "lastname", "email"],
+    ["Ahmed", "Tomi", "ah@smthing.co.com"],
+    ["Raed", "Labes", "rl@smthing.co.com"],
+    ["Yezzi", "Min l3b", "ymin@cocococo.com"],
+  ];
   const handleSort = (sortBy, sortField) => {
     setSortBy(sortBy);
     setSortFeild(sortField);
@@ -98,29 +106,61 @@ const TableUsers = (props) => {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h5>
-          <span>
-            {" "}
-            List User <i className="fas fa-globe-europe"></i>{" "}
-          </span>
-        </h5>
-
-        <div className="col-4 mt-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by Email"
-            // value={setKeyword}
-            onChange={(event) => handleSearch(event)}
-          />
-        </div>
-        <button
-          className="btn btn-outline-dark"
-          onClick={() => setShowModalAddNew(true)}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {/* Row 1 */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          Add New
-        </button>
+          <h5>
+            <span>
+              <i className="fas fa-globe-europe"></i> List User
+            </span>
+          </h5>
+          <button
+            className="btn btn-outline-dark"
+            onClick={() => setShowModalAddNew(true)}
+          >
+            <i className="fa fa-plus" style={{ fontSize: 20 }}></i> Add New
+          </button>
+        </div>
+
+        {/* Row 2 */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "5px", // Khoảng cách giữa các nút
+          }}
+        >
+          <div className="col-4">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by Email"
+              onChange={(event) => handleSearch(event)}
+            />
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            {" "}
+            {/* Chứa các nút thẳng hàng */}
+            <label htmlFor="import" className="btn btn-outline-primary">
+              <i className="fa-solid fa-file-import"></i> Import
+            </label>
+            <input id="import" type="file" hidden />
+            <CSVLink
+              data={csvData}
+              filename={"users.csv"}
+              className="btn btn-outline-success"
+            >
+              <i className="fa-solid fa-download"></i> Export
+            </CSVLink>
+          </div>
+        </div>
       </div>
 
       <Table striped bordered hover>
