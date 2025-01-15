@@ -10,7 +10,8 @@ import ModalConfirm from "./ModalConfirm";
 import _, { debounce } from "lodash";
 import "./TableUser.scss";
 import { CSVLink, CSVDownload } from "react-csv";
-
+import Papa from "papaparse";
+import { Toast } from "bootstrap";
 const TableUsers = (props) => {
   let [listUsers, setListUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0); // paging: ban đầu ko có dữ liệu thì là 0
@@ -25,7 +26,53 @@ const TableUsers = (props) => {
   const [keyword, setKeyword] = useState("");
 
   const [dataExport, setDataExport] = useState([]);
-  // CSV EXPORT
+
+  const handleImportCSV = (event) => {
+    if (event.target && event.target.files && event.target.files[0]) {
+      let file = event.target.files[0];
+
+      if (file.type !== "text/csv") {
+        toast.warn("Only accept CSV files");
+        return;
+      }
+      // Parse local CSV file
+      Papa.parse(file, {
+        complete: function (result) {
+          let rawCSV = result.data;
+          if (rawCSV.length > 0) {
+            if (rawCSV[0] && rawCSV[0].length === 3) {
+              if (
+                rawCSV[0][0] !== "email" ||
+                rawCSV[0][1] !== "first_name" ||
+                rawCSV[0][2] !== "last_name"
+              ) {
+                toast.error("Wrong format Header CSV file! (if 3 )");
+              } else {
+                let result = [];
+
+                rawCSV.map((item, index) => {
+                  if (index > 0 && item.length === 3) {
+                    let obj = {};
+                    obj.email = item[0];
+                    obj.first_name = item[1];
+                    obj.last_name = item[2];
+                    result.push(obj);
+                  }
+                });
+                setListUsers(result);
+                console.log("check result", result);
+              }
+            } else {
+              toast.error("Wrong format CSV file! ( if 2) ");
+            }
+          } else {
+            toast.error("Not found CSV file (if 1 )  ");
+          }
+        },
+      });
+    }
+  };
+
   const getUsersExport = (event, done) => {
     let result = []; // tạo dữ liệu ban đẩu là rỗng
     if (listUsers && listUsers.length > 0) {
@@ -167,11 +214,17 @@ const TableUsers = (props) => {
             <label htmlFor="import" className="btn btn-outline-primary">
               <i className="fa-solid fa-file-import"></i> Import
             </label>
-            <input id="import" type="file" hidden />
+            <input
+              id="import"
+              type="file"
+              hidden
+              onChange={(event) => handleImportCSV(event)}
+            />
+
             <CSVLink
               filename={"users.csv"}
               className="btn btn-outline-success"
-              data={dataExport}
+              data={dataExport} // FINAL: NẠP DATA vào và export thôi
               asyncOnClick={true} // chờ onclick xử lí xong
               onClick={getUsersExport} // run function bên trong
             >
