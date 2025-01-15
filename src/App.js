@@ -5,14 +5,15 @@ import TableUsers from "./components/TableUser";
 import Container from "react-bootstrap/Container";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Home from "./components/Home";
 function App() {
   return (
     <>
       <div className="app-container">
         <Header /> <br />
         <Container>
-          <TableUsers />
+          {/* <TableUsers /> */}
+          <Home />
         </Container>
       </div>
 
